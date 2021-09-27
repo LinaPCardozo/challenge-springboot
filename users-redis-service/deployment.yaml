@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users-redis
+  template:
+    metadata:
+      labels:
+        app: users-redis
+    spec:
+      containers:
+        - name: users-redis
+          image: lina4281/challenge-users-redis-service:0.0.1-SNAPSHOT
+          ports:
+            - containerPort: 8082
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-redis
+spec:
+  selector:
+    app: users-redis
+  ports:
+    - port: 8082
+      targetPort: 8082
+  type: NodePort

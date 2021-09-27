@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: 27017
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+spec:
+  selector:
+    matchLabels:
+      app: mongo
+  serviceName: "mongo"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: mongo
+        image: mongo
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongo-lina
+          mountPath: /data/db
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-lina
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 256Mi
